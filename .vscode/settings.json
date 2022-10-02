@@ -6,6 +6,11 @@
     "files.associations": {
         "palette.h": "c",
         "structures.h": "c",
-        "system.h": "c"
+        "system.h": "c",
+        "game.h": "c",
+        "font.h": "c",
+        "stdio.h": "c",
+        "defines.h": "c",
+        "rand.h": "c"
     }
 }

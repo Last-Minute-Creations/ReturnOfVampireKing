@@ -25,6 +25,8 @@ extern tStateManager *g_pStateMachineGame;
 struct wicher wicher;
 
 UBYTE direction = DIR_NONE;
+UBYTE interactionType = 0;
+BOOL executeInteractionCheck = FALSE;
 
 int mapCurrent[MAP_HEIGHT][MAP_WIDTH];
 UBYTE mapPrep = 0;
@@ -148,6 +150,10 @@ void isTileWalkableCheckAndPass(UBYTE dir)
 		default:
 			break;
 		}
+
+		blitRect(s_pVpManagerMenu->pBack, wicher.blitPosX, wicher.blitPosY, TS, TS, 0);
+		blitCopy(s_pTileset, 0, wicher.face, s_pVpManagerMenu->pBack, wicher.blitPosX, wicher.blitPosY, TS, TS, MINTERM_COOKIE);
+
 	}
 }
 
@@ -173,6 +179,10 @@ void drawMap()
 				wicher.blitPosY = j * TS;
 				blitCopy(s_pTileset, 0, wicher.face, s_pVpManagerMenu->pBack, i * TS, j * TS, TS, TS, MINTERM_COOKIE);
 			}
+			if (mapCurrent[j][i] == FALKON)
+			{
+				blitCopy(s_pTileset, 160, 32, s_pVpManagerMenu->pBack, i * TS, j * TS, TS, TS, MINTERM_COOKIE);	
+			}
 		}
 	}
 }
@@ -190,6 +200,48 @@ void mapDrawTwice()
 	}
 }
 
+void checkInteraction(UBYTE dir){
+switch (dir)
+	{
+		case RIGHT:
+			if (mapCurrent[wicher.mapPosY][wicher.mapPosX + 1] != 0)
+			{
+				interactionType = mapCurrent[wicher.mapPosY][wicher.mapPosX + 1];
+			}
+			break;
+		case LEFT:
+			if (mapCurrent[wicher.mapPosY][wicher.mapPosX - 1] != 0)
+			{
+				interactionType = mapCurrent[wicher.mapPosY][wicher.mapPosX - 1];
+			}
+			break;
+		case UP:
+			if (mapCurrent[wicher.mapPosY - 1][wicher.mapPosX] != 0)
+			{
+				interactionType = mapCurrent[wicher.mapPosY - 1][wicher.mapPosX];
+			}
+			break;
+		case DOWN:
+			if (mapCurrent[wicher.mapPosY + 1][wicher.mapPosX] != 0)
+			{
+				interactionType = mapCurrent[wicher.mapPosY + 1][wicher.mapPosX];
+			}
+			break;
+
+		default:
+			break;	
+	}
+	if (interactionType != 0){
+		executeInteractionCheck = TRUE;
+	}
+}
+
+void executeInteraction(UBYTE type){
+	if (type == FALKON){
+		blitRect(s_pVpManagerMenu->pBack, 32, 32, 96, 96, randUwMinMax(0, 0, 32));
+	}
+	
+}
 ////////////////////////////////////////////////////
 void stateMenuCreate(void)
 {
@@ -228,6 +280,7 @@ void stateMenuCreate(void)
 
 	loadMap(map1);
 	
+	randInit(0, 69, 1337);
 
 	joyOpen();
 	keyCreate();
@@ -239,6 +292,12 @@ void stateMenuLoop(void)
 {
 	mapDrawTwice();
 	isTileWalkableCheckAndPass(direction);
+
+	if (executeInteractionCheck == TRUE){
+		executeInteraction(interactionType);
+		executeInteractionCheck = FALSE;
+		interactionType = 0;
+	}
 
 	if (wicher.state == STATE_ANIM)
 	{
@@ -282,10 +341,15 @@ void stateMenuLoop(void)
 		else if (keyCheck(KEY_UP))
 		{
 			direction = UP;
+			wicher.face = FACE_UP;
 		}
 		else if (keyCheck(KEY_DOWN))
 		{
 			direction = DOWN;
+			wicher.face = FACE_DOWN;
+		}
+		else if (keyCheck(KEY_RETURN)){
+			checkInteraction(direction);
 		}
 	}
 

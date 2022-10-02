@@ -9,6 +9,7 @@
 #define EMPTY_TILE 0
 #define METEORITE  1
 #define WICHER     2
+#define FALKON     3
 
 #define DIR_NONE 0
 #define RIGHT    1
@@ -21,6 +22,8 @@
 
 #define FACE_RIGHT 64
 #define FACE_LEFT  96
+#define FACE_UP    128
+#define FACE_DOWN  160
 
 #define WICHER_ANIM_SPEED 4
 
