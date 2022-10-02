@@ -182,6 +182,11 @@ void mapDrawTwice()
 	{
 		drawMap();
 		++mapPrep;
+		// after drawing map twice and have the position of Wicher set
+		// clear the starting position on map to 0 so it becomes walkable 
+		if (mapPrep == 2){
+		mapCurrent[wicher.mapPosY][wicher.mapPosX] = 0;
+		}
 	}
 }
 
@@ -206,8 +211,9 @@ void stateMenuCreate(void)
 										  TAG_END);
 
 	paletteLoad("data/falkon.plt", s_pVp->pPalette, 32);
+	// messages will be added later:
 	s_pFont = fontCreate("data/topaz.fnt");
-	s_pBmText = fontCreateTextBitMap(300, s_pFont->uwHeight);
+	s_pBmText = fontCreateTextBitMap(320, s_pFont->uwHeight);
 	s_pTileset = bitmapCreateFromFile("data/staryWicher.bm", 0);
 
 	//blitRect(s_pVpManagerMenu->pBack, 0, 0, 320, 128, 0);
@@ -220,7 +226,7 @@ void stateMenuCreate(void)
     wicher.animTick = 0;
     wicher.animCount = 0; 
 
-	loadMap(map2);
+	loadMap(map1);
 	
 
 	joyOpen();
