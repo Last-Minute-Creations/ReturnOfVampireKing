@@ -11,6 +11,8 @@
         "font.h": "c",
         "stdio.h": "c",
         "defines.h": "c",
-        "rand.h": "c"
+        "rand.h": "c",
+        "types.h": "c",
+        "custom.h": "c"
     }
 }

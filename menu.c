@@ -11,6 +11,7 @@
 #include "defines.h"
 #include "structures.h"
 #include "maps.h"
+#include "anim.h"
 
 static tView *s_pView;
 static tVPort *s_pVp;
@@ -64,57 +65,8 @@ void updateWicherPositionOnMapAfterAnim(UBYTE dir)
 		break;
 	}
 }
-void blitWicherAnim(UBYTE dir)
-{
-	switch (dir) // setting up 'pixel position' for blitting fly animation
-	{				   // based on position on level map array, every frame
-	case RIGHT:
-		wicher.blitPosX = (wicher.mapPosX * TS) + (wicher.animCount* WICHER_ANIM_SPEED);
-		break;
-	case LEFT:
-		wicher.blitPosX = (wicher.mapPosX * TS) - (wicher.animCount * WICHER_ANIM_SPEED);
-		break;
-	case UP:
-		wicher.blitPosY = (wicher.mapPosY * TS) - (wicher.animCount * WICHER_ANIM_SPEED);
-		break;
-	case DOWN:
-		wicher.blitPosY = (wicher.mapPosY * TS) + (wicher.animCount* WICHER_ANIM_SPEED);
-		break;
-	default:
-		break;
-	}
 
-	if (wicher.animTick == 0 || wicher.animTick == 1)
-	{
-		if (wicher.animCount == 0)
-		{	// this might be unnecessary
-			// blitRect(s_pVpManagerMenu->pBack,blitPosX,blitPosY,TS,TS,0);
-			// blitCopy(s_pTileset,0,wicherFace,s_pVpManagerMenu->pBack,blitPosX,blitPosY,TS,TS,MINTERM_COOKIE);
-		}
-		else
-		{
-			switch (dir) // this is for proper background bliting each frame
-			{				   // blits bg on the oposite side than direction
-			case RIGHT:
-				blitRect(s_pVpManagerMenu->pBack, wicher.blitPosX - WICHER_ANIM_SPEED, wicher.blitPosY, TS, TS, 0);
-				break;
-			case LEFT:
-				blitRect(s_pVpManagerMenu->pBack, wicher.blitPosX + WICHER_ANIM_SPEED, wicher.blitPosY, TS, TS, 0);
-				break;
-			case UP:
-				blitRect(s_pVpManagerMenu->pBack, wicher.blitPosX, wicher.blitPosY + WICHER_ANIM_SPEED, TS, TS, 0);
-				break;
-			case DOWN:
-				blitRect(s_pVpManagerMenu->pBack, wicher.blitPosX, wicher.blitPosY - WICHER_ANIM_SPEED, TS, TS, 0);
-				break;
-
-			default:
-				break;
-			}
-			blitCopy(s_pTileset, 0, wicher.face, s_pVpManagerMenu->pBack, wicher.blitPosX, wicher.blitPosY, TS, TS, MINTERM_COOKIE);
-		}
-	}
-}
+//void blitWicherAnim(UBYTE dir, tBitMap *pBack, tBitMap *tileset);
 
 void isTileWalkableCheckAndPass(UBYTE dir)
 {
@@ -301,7 +253,7 @@ void stateMenuLoop(void)
 
 	if (wicher.state == STATE_ANIM)
 	{
-		blitWicherAnim(direction);
+		blitWicherAnim(direction, s_pVpManagerMenu->pBack, s_pTileset);
 		++wicher.animTick;
 		if (wicher.animTick == 4)
 		{
