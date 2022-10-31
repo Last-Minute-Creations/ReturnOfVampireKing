@@ -21,6 +21,7 @@ static tFont *s_pFont;
 static tTextBitMap *s_pBmText;
 
 extern tState g_sStateGame;
+extern tState g_sStateCombat;
 extern tStateManager *g_pStateMachineGame;
 
 struct wicher wicher;
@@ -31,6 +32,11 @@ BOOL executeInteractionCheck = FALSE;
 
 int mapCurrent[MAP_HEIGHT][MAP_WIDTH];
 UBYTE mapPrep = 0;
+
+void gameOnResume(void)
+{
+  viewLoad(s_pView);
+}
 
 void loadMap(int mapSelected[MAP_HEIGHT][MAP_WIDTH])
 { 
@@ -188,7 +194,10 @@ switch (dir)
 
 void executeInteraction(UBYTE type){
 	if (type == FALKON){
-		blitRect(s_pVpManagerGame->pBack, 32, 32, 96, 96, randUwMinMax(0, 0, 32));
+		// test interaction squae  WORKS
+		//blitRect(s_pVpManagerGame->pBack, 32, 32, 96, 96, randUwMinMax(0, 0, 32));
+		// test state change
+		statePush(g_pStateMachineGame, &g_sStateCombat);
 	}
 	
 }
@@ -323,5 +332,5 @@ tState g_sStateGame = {
 	.cbLoop = stateGameLoop,
 	.cbDestroy = stateGameDestroy,
 	.cbSuspend = 0,
-	.cbResume = 0,
+	.cbResume = gameOnResume,
 	.pPrev = 0};

@@ -13,6 +13,7 @@
         "defines.h": "c",
         "rand.h": "c",
         "types.h": "c",
-        "custom.h": "c"
+        "custom.h": "c",
+        "simplebuffer.h": "c"
     }
 }
