@@ -5,7 +5,7 @@ project(staryWicher LANGUAGES C)
 add_subdirectory(ACE ace)
 
 add_executable(
-	staryWicher.elf main.c menu.c anim.c
+	staryWicher.elf main.c game.c anim.c
 	
 ) # Compiler emits .elf file, we need hunk for Amiga
 

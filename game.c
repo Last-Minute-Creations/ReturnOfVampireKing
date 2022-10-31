@@ -15,7 +15,7 @@
 
 static tView *s_pView;
 static tVPort *s_pVp;
-static tSimpleBufferManager *s_pVpManagerMenu;
+static tSimpleBufferManager *s_pVpManagerGame;
 static tBitMap *s_pTileset;
 static tFont *s_pFont;
 static tTextBitMap *s_pBmText;
@@ -66,8 +66,6 @@ void updateWicherPositionOnMapAfterAnim(UBYTE dir)
 	}
 }
 
-//void blitWicherAnim(UBYTE dir, tBitMap *pBack, tBitMap *tileset);
-
 void isTileWalkableCheckAndPass(UBYTE dir)
 {
 	if (dir != DIR_NONE)
@@ -103,8 +101,8 @@ void isTileWalkableCheckAndPass(UBYTE dir)
 			break;
 		}
 
-		blitRect(s_pVpManagerMenu->pBack, wicher.blitPosX, wicher.blitPosY, TS, TS, 0);
-		blitCopy(s_pTileset, 0, wicher.face, s_pVpManagerMenu->pBack, wicher.blitPosX, wicher.blitPosY, TS, TS, MINTERM_COOKIE);
+		blitRect(s_pVpManagerGame->pBack, wicher.blitPosX, wicher.blitPosY, TS, TS, 0);
+		blitCopy(s_pTileset, 0, wicher.face, s_pVpManagerGame->pBack, wicher.blitPosX, wicher.blitPosY, TS, TS, MINTERM_COOKIE);
 
 	}
 }
@@ -117,11 +115,11 @@ void drawMap()
 		{
 			if (mapCurrent[j][i] == EMPTY_TILE)
 			{
-				blitRect(s_pVpManagerMenu->pBack, i * TS, j * TS, TS, TS, 0);
+				blitRect(s_pVpManagerGame->pBack, i * TS, j * TS, TS, TS, 0);
 			}
 			if (mapCurrent[j][i] == METEORITE)
 			{
-				blitCopy(s_pTileset, 0, 0, s_pVpManagerMenu->pBack, i * TS, j * TS, TS, TS, MINTERM_COOKIE);
+				blitCopy(s_pTileset, 0, 0, s_pVpManagerGame->pBack, i * TS, j * TS, TS, TS, MINTERM_COOKIE);
 			}
 			if (mapCurrent[j][i] == WICHER)
 			{
@@ -129,11 +127,11 @@ void drawMap()
 				wicher.mapPosY = j;
 				wicher.blitPosX = i * TS;
 				wicher.blitPosY = j * TS;
-				blitCopy(s_pTileset, 0, wicher.face, s_pVpManagerMenu->pBack, i * TS, j * TS, TS, TS, MINTERM_COOKIE);
+				blitCopy(s_pTileset, 0, wicher.face, s_pVpManagerGame->pBack, i * TS, j * TS, TS, TS, MINTERM_COOKIE);
 			}
 			if (mapCurrent[j][i] == FALKON)
 			{
-				blitCopy(s_pTileset, 160, 32, s_pVpManagerMenu->pBack, i * TS, j * TS, TS, TS, MINTERM_COOKIE);	
+				blitCopy(s_pTileset, 160, 32, s_pVpManagerGame->pBack, i * TS, j * TS, TS, TS, MINTERM_COOKIE);	
 			}
 		}
 	}
@@ -190,12 +188,12 @@ switch (dir)
 
 void executeInteraction(UBYTE type){
 	if (type == FALKON){
-		blitRect(s_pVpManagerMenu->pBack, 32, 32, 96, 96, randUwMinMax(0, 0, 32));
+		blitRect(s_pVpManagerGame->pBack, 32, 32, 96, 96, randUwMinMax(0, 0, 32));
 	}
 	
 }
 ////////////////////////////////////////////////////
-void stateMenuCreate(void)
+void stateGameCreate(void)
 {
 	s_pView = viewCreate(0,
 						 TAG_VIEW_COPLIST_MODE, COPPER_MODE_BLOCK,
@@ -206,7 +204,7 @@ void stateMenuCreate(void)
 						TAG_VPORT_BPP, 5,
 						TAG_END);
 
-	s_pVpManagerMenu = simpleBufferCreate(0,
+	s_pVpManagerGame = simpleBufferCreate(0,
 										  TAG_SIMPLEBUFFER_VPORT, s_pVp,
 										  TAG_SIMPLEBUFFER_BITMAP_FLAGS, BMF_CLEAR | BMF_INTERLEAVED,
 										  TAG_SIMPLEBUFFER_IS_DBLBUF, 1,
@@ -220,8 +218,8 @@ void stateMenuCreate(void)
 	s_pBmText = fontCreateTextBitMap(320, s_pFont->uwHeight);
 	s_pTileset = bitmapCreateFromFile("data/staryWicher.bm", 0);
 
-	//blitRect(s_pVpManagerMenu->pBack, 0, 0, 320, 128, 0);
-	//blitRect(s_pVpManagerMenu->pBack, 0, 128, 320, 128, 0);
+	//blitRect(s_pVpManagerGame->pBack, 0, 0, 320, 128, 0);
+	//blitRect(s_pVpManagerGame->pBack, 0, 128, 320, 128, 0);
 
 	//////////////// Setup
 
@@ -240,7 +238,7 @@ void stateMenuCreate(void)
 	viewLoad(s_pView);
 }
 ///////////////////////////////////////////////////////
-void stateMenuLoop(void)
+void stateGameLoop(void)
 {
 	mapDrawTwice();
 	isTileWalkableCheckAndPass(direction);
@@ -253,7 +251,7 @@ void stateMenuLoop(void)
 
 	if (wicher.state == STATE_ANIM)
 	{
-		blitWicherAnim(direction, s_pVpManagerMenu->pBack, s_pTileset);
+		blitWicherAnim(direction, s_pVpManagerGame->pBack, s_pTileset);
 		++wicher.animTick;
 		if (wicher.animTick == 4)
 		{
@@ -305,13 +303,13 @@ void stateMenuLoop(void)
 		}
 	}
 
-	cameraCenterAt(s_pVpManagerMenu->pCamera, wicher.blitPosX, wicher.blitPosY);
+	cameraCenterAt(s_pVpManagerGame->pCamera, wicher.blitPosX, wicher.blitPosY);
 	viewProcessManagers(s_pView);
 	copProcessBlocks();
 	vPortWaitForEnd(s_pVp);
 }
 
-void stateMenuDestroy(void)
+void stateGameDestroy(void)
 {
 
 	systemUse();
@@ -320,10 +318,10 @@ void stateMenuDestroy(void)
 	keyDestroy();
 }
 
-tState g_sStateMenu = {
-	.cbCreate = stateMenuCreate,
-	.cbLoop = stateMenuLoop,
-	.cbDestroy = stateMenuDestroy,
+tState g_sStateGame = {
+	.cbCreate = stateGameCreate,
+	.cbLoop = stateGameLoop,
+	.cbDestroy = stateGameDestroy,
 	.cbSuspend = 0,
 	.cbResume = 0,
 	.pPrev = 0};
