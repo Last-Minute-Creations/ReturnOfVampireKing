@@ -25,8 +25,11 @@ extern tState g_sStateCombat;
 extern tStateManager *g_pStateMachineGame;
 
 struct wicher wicher;
+struct stats opponent;
+struct stats player;
 
-UBYTE direction = DIR_NONE;
+UBYTE flyAnimDirectionHandler = DIR_NONE; // for checking if we're still flying and wchich direction
+UBYTE lastUsedDirection = DIR_NONE; // for checking interaction - head points to the checked position
 UBYTE interactionType = 0;
 BOOL executeInteractionCheck = FALSE;
 
@@ -194,6 +197,9 @@ switch (dir)
 
 void executeInteraction(UBYTE type){
 	if (type == FALKON){
+		opponent.power = randUlMinMax(0,6,12);
+		opponent.endurance = randUlMinMax(0,6,16);
+		opponent.energy = randUlMinMax(0,1,4);
 		// test interaction squae  WORKS
 		//blitRect(s_pVpManagerGame->pBack, 32, 32, 96, 96, randUwMinMax(0, 0, 32));
 		// test state change
@@ -236,11 +242,14 @@ void stateGameCreate(void)
     wicher.face = FACE_RIGHT;
     wicher.animTick = 0;
     wicher.animCount = 0; 
+	// stats
+	player.power = 10;
+	player.endurance = 20;
+	player.energy = 20;
 
 	loadMap(map1);
 	
 	randInit(0, 69, 1337);
-
 	joyOpen();
 	keyCreate();
 	systemUnuse();
@@ -250,7 +259,7 @@ void stateGameCreate(void)
 void stateGameLoop(void)
 {
 	mapDrawTwice();
-	isTileWalkableCheckAndPass(direction);
+	isTileWalkableCheckAndPass(flyAnimDirectionHandler);
 
 	if (executeInteractionCheck == TRUE){
 		executeInteraction(interactionType);
@@ -260,7 +269,7 @@ void stateGameLoop(void)
 
 	if (wicher.state == STATE_ANIM)
 	{
-		blitWicherAnim(direction, s_pVpManagerGame->pBack, s_pTileset);
+		blitWicherAnim(flyAnimDirectionHandler, s_pVpManagerGame->pBack, s_pTileset);
 		++wicher.animTick;
 		if (wicher.animTick == 4)
 		{
@@ -270,8 +279,8 @@ void stateGameLoop(void)
 		if (wicher.animCount > 8)
 		{
 			wicher.state = STATE_IDLE;
-			updateWicherPositionOnMapAfterAnim(direction);
-			direction = DIR_NONE;
+			updateWicherPositionOnMapAfterAnim(flyAnimDirectionHandler);
+			flyAnimDirectionHandler = DIR_NONE;
 			wicher.animCount = 0;
 		}
 	}
@@ -289,26 +298,30 @@ void stateGameLoop(void)
 
 		else if (keyCheck(KEY_RIGHT))
 		{
-			direction = RIGHT;
+			flyAnimDirectionHandler = RIGHT;
+			lastUsedDirection = flyAnimDirectionHandler;
 			wicher.face = FACE_RIGHT;
 		}
 		else if (keyCheck(KEY_LEFT))
 		{
-			direction = LEFT;
+			flyAnimDirectionHandler = LEFT;
+			lastUsedDirection = flyAnimDirectionHandler;
 			wicher.face = FACE_LEFT;
 		}
 		else if (keyCheck(KEY_UP))
 		{
-			direction = UP;
+			flyAnimDirectionHandler = UP;
+			lastUsedDirection = flyAnimDirectionHandler;
 			wicher.face = FACE_UP;
 		}
 		else if (keyCheck(KEY_DOWN))
 		{
-			direction = DOWN;
+			flyAnimDirectionHandler = DOWN;
+			lastUsedDirection = flyAnimDirectionHandler;
 			wicher.face = FACE_DOWN;
 		}
 		else if (keyCheck(KEY_RETURN)){
-			checkInteraction(direction);
+			checkInteraction(lastUsedDirection);
 		}
 	}
 

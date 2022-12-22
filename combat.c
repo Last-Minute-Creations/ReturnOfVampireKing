@@ -5,12 +5,16 @@
 #include <ace/managers/game.h>
 #include <ace/utils/palette.h>
 #include <stdio.h>
+#include <ace/managers/rand.h>
 #include <ace/managers/state.h>
 #include <ace/managers/blit.h>
 #include <ace/utils/font.h>
 #include <ace/managers/ptplayer.h>
+#include "structures.h"
 
 #define TEXT_BITMAP_WIDTH 320
+#define PLAYER_STATS_BLIT_X 10
+#define OPP_STATS_BLIT_X 140
 
 static tView *s_pView;
 static tVPort *s_pVp;
@@ -22,6 +26,11 @@ extern tStateManager *g_pStateMachineGame;
 static tFont *s_pFont;
 static tTextBitMap *s_pBmText;
 
+extern struct wicher wicher;
+extern struct stats opponent;
+extern struct stats player;
+char msg[50];
+
 void waitFrames(tVPort *pVPort, UBYTE ubHowMany)
 {
   for (UBYTE i = 0; i < ubHowMany; ++i)
@@ -30,6 +39,28 @@ void waitFrames(tVPort *pVPort, UBYTE ubHowMany)
     copProcessBlocks();
     vPortWaitForEnd(pVPort);
   }
+}
+
+void showStats(int posX, struct stats *stats){
+    blitRect(s_pVpManager->pBack, posX, 30, 110, 50, 22);
+    sprintf(msg, "Power     : %d", stats->power);
+    fontFillTextBitMap(s_pFont, s_pBmText, msg);
+    fontDrawTextBitMap(s_pVpManager->pBack, s_pBmText, posX, 30, 23, FONT_COOKIE);
+    sprintf(msg, "Endurance  : %d", stats->endurance);
+    fontFillTextBitMap(s_pFont, s_pBmText, msg);
+    fontDrawTextBitMap(s_pVpManager->pBack, s_pBmText, posX, 40, 23, FONT_COOKIE);
+    sprintf(msg, "Energy    : %d", stats->energy);
+    fontFillTextBitMap(s_pFont, s_pBmText, msg);
+    fontDrawTextBitMap(s_pVpManager->pBack, s_pBmText, posX, 50, 23, FONT_COOKIE);
+}
+
+void attack(){
+  UBYTE attackRoll = randUlMinMax(0,1,6);
+  UBYTE defenceRoll = randUlMinMax(0,1,6);
+  if (player.power + attackRoll > opponent.power + defenceRoll){
+    opponent.endurance -= (player.power + attackRoll) - (opponent.power + defenceRoll);
+  }
+  showStats(OPP_STATS_BLIT_X, &opponent);
 }
 
 void stateCombatCreate(void)
@@ -66,6 +97,8 @@ void stateCombatCreate(void)
     fontFillTextBitMap(s_pFont, s_pBmText, "KOMBAT HERE !");
     fontDrawTextBitMap(s_pVpManager->pBack, s_pBmText, 10, 10, 23, FONT_COOKIE);
 
+    showStats(PLAYER_STATS_BLIT_X, &player);
+    showStats(OPP_STATS_BLIT_X, &opponent);
 
     viewLoad(s_pView);
 }
@@ -79,6 +112,9 @@ void stateCombatLoop(void)
   {
     statePop(g_pStateMachineGame);
     return;
+  }
+  if (keyUse(KEY_A)){
+    attack();
   }
 
   viewProcessManagers(s_pView);

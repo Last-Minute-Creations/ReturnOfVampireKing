@@ -2,6 +2,7 @@
 #define STRUCTURES_H
 
 struct wicher {
+    // movement handling
     UBYTE mapPosX;
     UBYTE mapPosY;
     int blitPosX;
@@ -10,6 +11,13 @@ struct wicher {
     UBYTE face;
     UBYTE animTick;
     UBYTE animCount;  
+    
+};
+
+struct stats {
+    UBYTE power;
+    UBYTE endurance;
+    UBYTE energy;
 };
 
 #endif
