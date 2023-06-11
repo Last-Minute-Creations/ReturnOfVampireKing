@@ -1,0 +1,10 @@
+{
+    "C_Cpp.default.configurationProvider": "BartmanAbyss.amiga-debug",
+    "files.associations": {
+        "blit.h": "c",
+        "simplebuffer.h": "c",
+        "game.h": "c",
+        "key.h": "c",
+        "palette.h": "c"
+    }
+}
