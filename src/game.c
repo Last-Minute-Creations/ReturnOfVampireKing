@@ -6,25 +6,13 @@
 #include <ace/managers/system.h>
 #include <ace/utils/font.h>
 #include <ace/utils/palette.h>
-//-------------------------------------------------------------- NEW STUFF START
 #include <ace/managers/blit.h> // Blitting fns
 
 #include "structures.h"
 #include "defines.h"
 #include "maps.h"
 
-// Let's make code more readable by giving names to numbers
-// It is a good practice to name constant stuff using uppercase
-#define BALL_WIDTH 8
-#define BALL_COLOR 1
-#define PADDLE_WIDTH 8
-#define PADDLE_HEIGHT 32
-#define PADDLE_LEFT_COLOR 2
-#define PADDLE_RIGHT_COLOR 3
-#define SCORE_COLOR 1
-#define WALL_HEIGHT 1
-#define WALL_COLOR 1
-//---------------------------------------------------------------- NEW STUFF END
+
 
 static tView *s_pView; // View containing all the viewports
 
@@ -52,6 +40,116 @@ void loadMap(int mapSelected[MAP_HEIGHT][MAP_WIDTH])
 			
 }
 
+void updateWicherPositionOnMapAfterAnim(UBYTE dir)
+{
+	switch (dir)
+	{
+	case RIGHT:
+		wicher.mapPosX++;
+		break;
+	case LEFT:
+		wicher.mapPosX--;
+		break;
+	case UP:
+		wicher.mapPosY--;
+		break;
+	case DOWN:
+		wicher.mapPosY++;
+		break;
+
+	default:
+		break;
+	}
+}
+void blitWicherAnim(UBYTE dir)
+{
+	switch (dir) // setting up 'pixel position' for blitting fly animation
+	{				   // based on position on level map array, every frame
+	case RIGHT:
+		wicher.blitPosX = (wicher.mapPosX * TS) + (wicher.animCount* WICHER_ANIM_SPEED);
+		break;
+	case LEFT:
+		wicher.blitPosX = (wicher.mapPosX * TS) - (wicher.animCount * WICHER_ANIM_SPEED);
+		break;
+	case UP:
+		wicher.blitPosY = (wicher.mapPosY * TS) - (wicher.animCount * WICHER_ANIM_SPEED);
+		break;
+	case DOWN:
+		wicher.blitPosY = (wicher.mapPosY * TS) + (wicher.animCount* WICHER_ANIM_SPEED);
+		break;
+	default:
+		break;
+	}
+
+	if (wicher.animTick == 0 || wicher.animTick == 1)
+	{
+		if (wicher.animCount == 0)
+		{	// this might be unnecessary
+			// blitRect(s_pVpManagerMenu->pBack,blitPosX,blitPosY,TS,TS,0);
+			// blitCopy(s_pTileset,0,wicherFace,s_pVpManagerMenu->pBack,blitPosX,blitPosY,TS,TS,MINTERM_COOKIE);
+		}
+		else
+		{
+			switch (dir) // this is for proper background bliting each frame
+			{				   // blits bg on the oposite side than direction
+			case RIGHT:
+				blitRect(s_pMainBuffer->pBack, wicher.blitPosX - WICHER_ANIM_SPEED, wicher.blitPosY, TS, TS, 0);
+				break;
+			case LEFT:
+				blitRect(s_pMainBuffer->pBack, wicher.blitPosX + WICHER_ANIM_SPEED, wicher.blitPosY, TS, TS, 0);
+				break;
+			case UP:
+				blitRect(s_pMainBuffer->pBack, wicher.blitPosX, wicher.blitPosY + WICHER_ANIM_SPEED, TS, TS, 0);
+				break;
+			case DOWN:
+				blitRect(s_pMainBuffer->pBack, wicher.blitPosX, wicher.blitPosY - WICHER_ANIM_SPEED, TS, TS, 0);
+				break;
+
+			default:
+				break;
+			}
+			blitCopy(s_pTileset, 0, wicher.face, s_pMainBuffer->pBack, wicher.blitPosX, wicher.blitPosY, TS, TS, MINTERM_COOKIE);
+		}
+	}
+}
+
+void isTileWalkableCheckAndPass(UBYTE dir)
+{
+	if (dir != DIR_NONE)
+	{
+		switch (dir)
+		{
+		case RIGHT:
+			if (mapCurrent[wicher.mapPosY][wicher.mapPosX + 1] == 0)
+			{
+				wicher.state = STATE_ANIM;
+			}
+			break;
+		case LEFT:
+			if (mapCurrent[wicher.mapPosY][wicher.mapPosX - 1] == 0)
+			{
+				wicher.state = STATE_ANIM;
+			}
+			break;
+		case UP:
+			if (mapCurrent[wicher.mapPosY - 1][wicher.mapPosX] == 0)
+			{
+				wicher.state = STATE_ANIM;
+			}
+			break;
+		case DOWN:
+			if (mapCurrent[wicher.mapPosY + 1][wicher.mapPosX] == 0)
+			{
+				wicher.state = STATE_ANIM;
+			}
+			break;
+
+		default:
+			break;
+		}
+	}
+}
+
 void drawMap()
 { // todo - pass map name as argument (pointers problems etc)
 	for (UBYTE i = 0; i < MAP_WIDTH; ++i)
@@ -73,6 +171,9 @@ void drawMap()
 				wicher.blitPosX = i * TS;
 				wicher.blitPosY = j * TS;
 				blitCopy(s_pTileset, 0, wicher.face, s_pMainBuffer->pBack, i * TS, j * TS, TS, TS, MINTERM_COOKIE);
+        if (mapPrep == 1){
+          mapCurrent[j][i] = EMPTY_TILE;
+        } 
 			}
 		}
 	}
@@ -134,24 +235,60 @@ void gameGsLoop(void) {
   //blitRect(s_pMainBuffer->pBack, 0, 0, 320, 128, 14);
   //drawMap();
   mapDrawTwice();
-  // This will loop every frame
-  if(keyCheck(KEY_ESCAPE)) {
-    gameExit();
-  }
-  /*else {
-//-------------------------------------------------------------- NEW STUFF START
-    // Draw first paddle
-    blitRect(
-      s_pMainBuffer->pBack, 0, 0,
-      PADDLE_WIDTH, PADDLE_HEIGHT, PADDLE_LEFT_COLOR
-    );
+  isTileWalkableCheckAndPass(direction);
 
-//---------------------------------------------------------------- NEW STUFF END
-  } */
+  if (wicher.state == STATE_ANIM)
+	{
+		blitWicherAnim(direction);
+		++wicher.animTick;
+		if (wicher.animTick == 4)
+		{
+			++wicher.animCount;
+			wicher.animTick = 0;
+		}
+		if (wicher.animCount > 8)
+		{
+			wicher.state = STATE_IDLE;
+			updateWicherPositionOnMapAfterAnim(direction);
+			direction = DIR_NONE;
+			wicher.animCount = 0;
+		}
+	}
 
-  //cameraCenterAt(s_pMainBuffer->pCamera, wicher.blitPosX, wicher.blitPosY);
-	//viewProcessManagers(s_pView);
-	//copProcessBlocks();
+	if (wicher.state == STATE_IDLE)
+	{
+
+		joyProcess();
+		keyProcess();
+
+		if (keyUse(KEY_ESCAPE)){
+			gameExit();
+			return;
+		}
+
+		else if (keyCheck(KEY_RIGHT))
+		{
+			direction = RIGHT;
+			wicher.face = FACE_RIGHT;
+		}
+		else if (keyCheck(KEY_LEFT))
+		{
+			direction = LEFT;
+			wicher.face = FACE_LEFT;
+		}
+		else if (keyCheck(KEY_UP))
+		{
+			direction = UP;
+		}
+		else if (keyCheck(KEY_DOWN))
+		{
+			direction = DOWN;
+		}
+	}
+
+  cameraCenterAt(s_pMainBuffer->pCamera, wicher.blitPosX, wicher.blitPosY);
+	viewProcessManagers(s_pView);
+	copProcessBlocks();
 	vPortWaitForEnd(s_pVpMain);
 }
 
