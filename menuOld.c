@@ -28,7 +28,7 @@ extern tStateManager *g_pStateMachineGame;
 
 //int mapCurrent[MAP_HEIGHT][MAP_WIDTH];
 //UBYTE mapPrep = 0;
-
+/*
 void loadMap(int mapSelected[MAP_HEIGHT][MAP_WIDTH])
 { 
 	for (UBYTE i = 0; i < MAP_WIDTH; ++i)
@@ -40,6 +40,7 @@ void loadMap(int mapSelected[MAP_HEIGHT][MAP_WIDTH])
 	}
 			
 }
+*/
 
 void updateWicherPositionOnMapAfterAnim(UBYTE dir)
 {
@@ -222,13 +223,13 @@ void stateMenuCreate(void)
     //wicher.animTick = 0;
     //wicher.animCount = 0; 
 
-	loadMap(map2);
+	//loadMap(map2);
 	
 
-	joyOpen();
-	keyCreate();
-	systemUnuse();
-	viewLoad(s_pView);
+	//joyOpen();
+	//keyCreate();
+	//systemUnuse();
+	//viewLoad(s_pView);
 }
 ///////////////////////////////////////////////////////
 void stateMenuLoop(void)
@@ -294,10 +295,10 @@ void stateMenuLoop(void)
 void stateMenuDestroy(void)
 {
 
-	systemUse();
-	viewDestroy(s_pView);
-	joyClose();
-	keyDestroy();
+	//systemUse();
+	//viewDestroy(s_pView);
+	//joyClose();
+	//keyDestroy();
 }
 
 tState g_sStateMenu = {

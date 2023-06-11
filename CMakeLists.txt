@@ -53,4 +53,12 @@ set(DATA_DIR ${CMAKE_CURRENT_BINARY_DIR}/data)
 file(MAKE_DIRECTORY ${DATA_DIR}) 
 
 set(PLT_PATH ${DATA_DIR}/vk.plt)
-convertPalette(hello.elf ${RES_DIR}/vk.pal ${PLT_PATH}) 
+convertPalette(hello.elf ${RES_DIR}/vk.pal ${PLT_PATH})
+
+convertBitmaps(
+	TARGET hello.elf PALETTE ${PLT_PATH}
+	INTERLEAVED SOURCES
+		${RES_DIR}/staryWicher.png 
+	DESTINATIONS
+		${DATA_DIR}/staryWicher.bm 
+)
