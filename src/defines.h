@@ -26,7 +26,8 @@
 
 #define TILE_EMPTY 0
 
-
+#define S 'S' // SORDAN TILE
+#define s 's' // SORDAN CHECK TILES
 
 
 

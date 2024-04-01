@@ -113,6 +113,14 @@ void blitWicherAnim(UBYTE dir)
 	}
 }
 
+void isInteractionOnAdjacentTile(){
+	switch(mapCurrent[wicher.mapPosY][wicher.mapPosX]){
+		case 's':
+		blitRect(s_pMainBuffer->pBack, wicher.blitPosX, wicher.blitPosY - WICHER_ANIM_SPEED, TS, TS, 1);
+		break;
+	}
+}
+
 void isTileWalkableCheckAndPass(UBYTE dir)
 {
 	if (dir != DIR_NONE)
@@ -120,25 +128,25 @@ void isTileWalkableCheckAndPass(UBYTE dir)
 		switch (dir)
 		{
 		case RIGHT:
-			if (mapCurrent[wicher.mapPosY][wicher.mapPosX + 1] == 0)
+			if (mapCurrent[wicher.mapPosY][wicher.mapPosX + 1] == 0 || mapCurrent[wicher.mapPosY][wicher.mapPosX + 1] == s) // TODO BETTER
 			{
 				wicher.state = STATE_ANIM;
 			}
 			break;
 		case LEFT:
-			if (mapCurrent[wicher.mapPosY][wicher.mapPosX - 1] == 0)
+			if (mapCurrent[wicher.mapPosY][wicher.mapPosX - 1] == 0 || mapCurrent[wicher.mapPosY][wicher.mapPosX - 1] == s) // TODO BETTER)
 			{
 				wicher.state = STATE_ANIM;
 			}
 			break;
 		case UP:
-			if (mapCurrent[wicher.mapPosY - 1][wicher.mapPosX] == 0)
+			if (mapCurrent[wicher.mapPosY - 1][wicher.mapPosX] == 0  || mapCurrent[wicher.mapPosY -1][wicher.mapPosX] == s) // TODO BETTER)
 			{
 				wicher.state = STATE_ANIM;
 			}
 			break;
 		case DOWN:
-			if (mapCurrent[wicher.mapPosY + 1][wicher.mapPosX] == 0)
+			if (mapCurrent[wicher.mapPosY + 1][wicher.mapPosX] == 0  || mapCurrent[wicher.mapPosY + 1][wicher.mapPosX] == s) // TODO BETTER)
 			{
 				wicher.state = STATE_ANIM;
 			}
@@ -156,9 +164,12 @@ void drawMap()
 	{
 		for (UBYTE j = 0; j < MAP_HEIGHT; ++j)
 		{
-			if (mapCurrent[j][i] == EMPTY_TILE)
+			if (mapCurrent[j][i] == EMPTY_TILE || mapCurrent[j][i] == s) // TODO BETTER
 			{
 				blitRect(s_pMainBuffer->pBack, i * TS, j * TS, TS, TS, 0);
+			}
+			if (mapCurrent[j][i] == S){ // SORDAN TILE
+				blitCopy(s_pTileset, 160, 32, s_pMainBuffer->pBack, i * TS, j * TS, TS, TS, MINTERM_COOKIE);
 			}
 			if (mapCurrent[j][i] == METEORITE)
 			{
@@ -220,7 +231,8 @@ void gameGsCreate(void) {
   //blitRect(s_pMainBuffer->pBack, 0, 0, 320, 128, 14);
 	//blitRect(s_pMainBuffer->pBack, 0, 128, 320, 128, 8);
 
-  loadMap(map2);
+  //loadMap(map2);
+  loadMap(map_commodorlen);
   
   systemUnuse();
 
@@ -235,6 +247,7 @@ void gameGsLoop(void) {
   //blitRect(s_pMainBuffer->pBack, 0, 0, 320, 128, 14);
   //drawMap();
   mapDrawTwice();
+  
   isTileWalkableCheckAndPass(direction);
 
   if (wicher.state == STATE_ANIM)
@@ -263,6 +276,11 @@ void gameGsLoop(void) {
 
 		if (keyUse(KEY_ESCAPE)){
 			gameExit();
+			return;
+		}
+
+		else if (keyUse(KEY_RETURN)){
+			isInteractionOnAdjacentTile();
 			return;
 		}
 
