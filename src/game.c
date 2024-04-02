@@ -121,6 +121,15 @@ void isInteractionOnAdjacentTile(){
 	}
 }
 
+BOOL walkableTiles(int checkX, int checkY){
+	switch (mapCurrent[checkY][checkX]){
+		case 0:
+		case s:
+		return TRUE;
+	}
+	return FALSE;
+}
+
 void isTileWalkableCheckAndPass(UBYTE dir)
 {
 	if (dir != DIR_NONE)
@@ -128,25 +137,29 @@ void isTileWalkableCheckAndPass(UBYTE dir)
 		switch (dir)
 		{
 		case RIGHT:
-			if (mapCurrent[wicher.mapPosY][wicher.mapPosX + 1] == 0 || mapCurrent[wicher.mapPosY][wicher.mapPosX + 1] == s) // TODO BETTER
+			if (walkableTiles(wicher.mapPosX + 1, wicher.mapPosY))
+			//if (mapCurrent[wicher.mapPosY][wicher.mapPosX + 1] == 0 || mapCurrent[wicher.mapPosY][wicher.mapPosX + 1] == s) // TODO BETTER
 			{
 				wicher.state = STATE_ANIM;
 			}
 			break;
 		case LEFT:
-			if (mapCurrent[wicher.mapPosY][wicher.mapPosX - 1] == 0 || mapCurrent[wicher.mapPosY][wicher.mapPosX - 1] == s) // TODO BETTER)
+			if (walkableTiles(wicher.mapPosX - 1, wicher.mapPosY))
+			//if (mapCurrent[wicher.mapPosY][wicher.mapPosX - 1] == 0 || mapCurrent[wicher.mapPosY][wicher.mapPosX - 1] == s) // TODO BETTER)
 			{
 				wicher.state = STATE_ANIM;
 			}
 			break;
 		case UP:
-			if (mapCurrent[wicher.mapPosY - 1][wicher.mapPosX] == 0  || mapCurrent[wicher.mapPosY -1][wicher.mapPosX] == s) // TODO BETTER)
+			if (walkableTiles(wicher.mapPosX, wicher.mapPosY - 1))
+			//if (mapCurrent[wicher.mapPosY - 1][wicher.mapPosX] == 0  || mapCurrent[wicher.mapPosY -1][wicher.mapPosX] == s) // TODO BETTER)
 			{
 				wicher.state = STATE_ANIM;
 			}
 			break;
 		case DOWN:
-			if (mapCurrent[wicher.mapPosY + 1][wicher.mapPosX] == 0  || mapCurrent[wicher.mapPosY + 1][wicher.mapPosX] == s) // TODO BETTER)
+			if (walkableTiles(wicher.mapPosX, wicher.mapPosY + 1))
+			//if (mapCurrent[wicher.mapPosY + 1][wicher.mapPosX] == 0  || mapCurrent[wicher.mapPosY + 1][wicher.mapPosX] == s) // TODO BETTER)
 			{
 				wicher.state = STATE_ANIM;
 			}
@@ -233,6 +246,7 @@ void gameGsCreate(void) {
 
   //loadMap(map2);
   loadMap(map_commodorlen);
+ 
   
   systemUnuse();
 
