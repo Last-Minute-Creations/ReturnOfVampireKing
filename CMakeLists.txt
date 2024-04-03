@@ -58,7 +58,9 @@ convertPalette(hello.elf ${RES_DIR}/vk.pal ${PLT_PATH})
 convertBitmaps(
 	TARGET hello.elf PALETTE ${PLT_PATH}
 	INTERLEAVED SOURCES
-		${RES_DIR}/staryWicher.png 
+		${RES_DIR}/staryWicher.png
+    ${RES_DIR}/hud_square.png
 	DESTINATIONS
 		${DATA_DIR}/staryWicher.bm 
+    ${DATA_DIR}/hud_square.bm
 )

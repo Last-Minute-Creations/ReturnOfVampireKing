@@ -20,6 +20,8 @@ static tVPort *s_pVpMain; // Viewport for playfield
 static tSimpleBufferManager *s_pMainBuffer;
 
 static tBitMap *s_pTileset;
+static tBitMap *s_pHUD_square;
+static tBitMap *s_pBelowHUD_square;
 static tFont *s_pFont;
 static tTextBitMap *s_pBmText;
 
@@ -27,6 +29,8 @@ struct wicher wicher;
 UBYTE direction = DIR_NONE;
 int mapCurrent[MAP_HEIGHT][MAP_WIDTH];
 UBYTE mapPrep = 0;
+
+int blitSquareHUDtwice = 2;
 
 void loadMap(int mapSelected[MAP_HEIGHT][MAP_WIDTH])
 { 
@@ -113,10 +117,19 @@ void blitWicherAnim(UBYTE dir)
 	}
 }
 
+void SquareHUDblitTwice(){
+	// 64,64 needs to be calculated
+	if (blitSquareHUDtwice < 2){
+		blitCopy(s_pHUD_square, 0, 0, s_pMainBuffer->pBack, 64, 64, 96, 96, MINTERM_COOKIE);
+		blitSquareHUDtwice++;
+	}
+}
+
 void isInteractionOnAdjacentTile(){
 	switch(mapCurrent[wicher.mapPosY][wicher.mapPosX]){
 		case 's':
-		blitRect(s_pMainBuffer->pBack, wicher.blitPosX, wicher.blitPosY - WICHER_ANIM_SPEED, TS, TS, 1);
+		blitSquareHUDtwice = 0;
+		//blitRect(s_pMainBuffer->pBack, wicher.blitPosX, wicher.blitPosY - WICHER_ANIM_SPEED, TS, TS, 1);
 		break;
 	}
 }
@@ -235,6 +248,7 @@ void gameGsCreate(void) {
   s_pFont = fontCreate("data/topaz.fnt");
   s_pBmText = fontCreateTextBitMap(300, s_pFont->uwHeight);
 	s_pTileset = bitmapCreateFromFile("data/staryWicher.bm", 0);
+	s_pHUD_square = bitmapCreateFromFile("data/hud_square.bm", 0);
 
   wicher.state = STATE_IDLE;
   wicher.face = FACE_RIGHT;
@@ -261,6 +275,7 @@ void gameGsLoop(void) {
   //blitRect(s_pMainBuffer->pBack, 0, 0, 320, 128, 14);
   //drawMap();
   mapDrawTwice();
+  SquareHUDblitTwice();
   
   isTileWalkableCheckAndPass(direction);
 
