@@ -5,16 +5,16 @@
 #include "game.h"
 
 tStateManager *g_pGameStateManager = 0;
-tState *g_pGameState = 0;
+tState *g_pStateGame = 0;
 
 void genericCreate(void) {
   // Here goes your startup code
   keyCreate(); // We'll use keyboard
   // Initialize gamestate
   g_pGameStateManager = stateManagerCreate();
-  g_pGameState = stateCreate(gameGsCreate, gameGsLoop, gameGsDestroy, 0, 0, 0);
+  g_pStateGame = stateCreate(stateGameCreate, stateGameLoop, stateGameDestroy, 0, 0, 0);
 
-  statePush(g_pGameStateManager, g_pGameState);
+  statePush(g_pGameStateManager, g_pStateGame);
 }
 
 void genericProcess(void) {
@@ -26,6 +26,6 @@ void genericProcess(void) {
 void genericDestroy(void) {
   // Here goes your cleanup code
   stateManagerDestroy(g_pGameStateManager);
-  stateDestroy(g_pGameState);
+  stateDestroy(g_pStateGame);
   keyDestroy(); // We don't need it anymore
 }

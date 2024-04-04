@@ -4,8 +4,8 @@
 // Function headers from game.c go here
 // It's best to put here only those functions which are needed in other files.
 
-void gameGsCreate(void);
-void gameGsLoop(void);
-void gameGsDestroy(void);
+void stateGameCreate(void);
+void stateGameLoop(void);
+void stateGameDestroy(void);
 
 #endif // _GAME_H_

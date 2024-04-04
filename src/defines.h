@@ -18,6 +18,7 @@
 
 #define STATE_IDLE 0
 #define STATE_ANIM 1
+#define STATE_HUD  2 
 
 #define FACE_RIGHT 64
 #define FACE_LEFT  96

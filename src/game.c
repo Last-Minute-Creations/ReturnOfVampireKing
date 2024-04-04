@@ -4,6 +4,7 @@
 #include <ace/managers/key.h>
 #include <ace/managers/viewport/simplebuffer.h>
 #include <ace/managers/system.h>
+#include <ace/managers/state.h>
 #include <ace/utils/font.h>
 #include <ace/utils/palette.h>
 #include <ace/managers/blit.h> // Blitting fns
@@ -13,7 +14,7 @@
 #include "maps.h"
 
 
-
+extern tStateManager *g_pStateMachineGame;
 static tView *s_pView; // View containing all the viewports
 
 static tVPort *s_pVpMain; // Viewport for playfield
@@ -31,6 +32,11 @@ int mapCurrent[MAP_HEIGHT][MAP_WIDTH];
 UBYTE mapPrep = 0;
 
 int blitSquareHUDtwice = 2;
+
+void gameOnResume(void)
+{
+  viewLoad(s_pView);
+}
 
 void loadMap(int mapSelected[MAP_HEIGHT][MAP_WIDTH])
 { 
@@ -119,17 +125,22 @@ void blitWicherAnim(UBYTE dir)
 
 void SquareHUDblitTwice(){
 	// 64,64 needs to be calculated
+	blitCopy(s_pMainBuffer->pBack, 64, 64, s_pBelowHUD_square, 0,0, 96, 96, MINTERM_COOKIE);
 	if (blitSquareHUDtwice < 2){
-		blitCopy(s_pHUD_square, 0, 0, s_pMainBuffer->pBack, 64, 64, 96, 96, MINTERM_COOKIE);
+		blitCopy(s_pHUD_square, 0, 0, s_pMainBuffer->pBack, 64, 64, 96, 96, MINTERM_COOKIE);		
 		blitSquareHUDtwice++;
 	}
+}
+
+void redrawBackgroundOnHUDExit(){
+	blitCopy(s_pBelowHUD_square, 0, 0, s_pMainBuffer->pBack, 64, 64, 96, 96, MINTERM_COOKIE);
 }
 
 void isInteractionOnAdjacentTile(){
 	switch(mapCurrent[wicher.mapPosY][wicher.mapPosX]){
 		case 's':
 		blitSquareHUDtwice = 0;
-		//blitRect(s_pMainBuffer->pBack, wicher.blitPosX, wicher.blitPosY - WICHER_ANIM_SPEED, TS, TS, 1);
+		wicher.state = STATE_HUD;
 		break;
 	}
 }
@@ -225,7 +236,7 @@ void mapDrawTwice()
 	}
 }
 
-void gameGsCreate(void) {
+void stateGameCreate(void) {
   s_pView = viewCreate(0,
     TAG_VIEW_GLOBAL_PALETTE, 1,
     TAG_VIEW_COPLIST_MODE, COPPER_MODE_BLOCK,
@@ -271,7 +282,7 @@ void gameGsCreate(void) {
   viewLoad(s_pView);
 }
 
-void gameGsLoop(void) {
+void stateGameLoop(void) {
   //blitRect(s_pMainBuffer->pBack, 0, 0, 320, 128, 14);
   //drawMap();
   mapDrawTwice();
@@ -333,16 +344,31 @@ void gameGsLoop(void) {
 		}
 	}
 
+	if (wicher.state == STATE_HUD){
+		if (keyUse(KEY_RETURN)){
+			wicher.state = STATE_IDLE;
+			redrawBackgroundOnHUDExit();
+		}
+	}
+
   cameraCenterAt(s_pMainBuffer->pCamera, wicher.blitPosX, wicher.blitPosY);
 	viewProcessManagers(s_pView);
 	copProcessBlocks();
 	vPortWaitForEnd(s_pVpMain);
 }
 
-void gameGsDestroy(void) {
+void stateGameDestroy(void) {
   systemUse();
   joyClose();
 	keyDestroy();
   // This will also destroy all associated viewports and viewport managers
   viewDestroy(s_pView);
 }
+
+tState g_sStateGame = {
+    .cbCreate = stateGameCreate,
+    .cbLoop = stateGameLoop,
+    .cbDestroy = stateGameDestroy,
+    .cbSuspend = 0,
+    .cbResume = gameOnResume,
+    .pPrev = 0};
