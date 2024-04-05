@@ -5,6 +5,7 @@
         "simplebuffer.h": "c",
         "game.h": "c",
         "key.h": "c",
-        "palette.h": "c"
+        "palette.h": "c",
+        "hud.h": "c"
     }
 }

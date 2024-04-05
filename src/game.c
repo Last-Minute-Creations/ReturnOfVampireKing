@@ -14,7 +14,9 @@
 #include "maps.h"
 
 
-extern tStateManager *g_pStateMachineGame;
+//extern tStateManager *g_pStateMachineGame;
+extern tStateManager *g_pGameStateManager;
+extern tState *g_pHudState;
 static tView *s_pView; // View containing all the viewports
 
 static tVPort *s_pVpMain; // Viewport for playfield
@@ -22,7 +24,6 @@ static tSimpleBufferManager *s_pMainBuffer;
 
 static tBitMap *s_pTileset;
 static tBitMap *s_pHUD_square;
-static tBitMap *s_pBelowHUD_square;
 static tFont *s_pFont;
 static tTextBitMap *s_pBmText;
 
@@ -123,24 +124,13 @@ void blitWicherAnim(UBYTE dir)
 	}
 }
 
-void SquareHUDblitTwice(){
-	// 64,64 needs to be calculated
-	blitCopy(s_pMainBuffer->pBack, 64, 64, s_pBelowHUD_square, 0,0, 96, 96, MINTERM_COOKIE);
-	if (blitSquareHUDtwice < 2){
-		blitCopy(s_pHUD_square, 0, 0, s_pMainBuffer->pBack, 64, 64, 96, 96, MINTERM_COOKIE);		
-		blitSquareHUDtwice++;
-	}
-}
-
-void redrawBackgroundOnHUDExit(){
-	blitCopy(s_pBelowHUD_square, 0, 0, s_pMainBuffer->pBack, 64, 64, 96, 96, MINTERM_COOKIE);
-}
 
 void isInteractionOnAdjacentTile(){
 	switch(mapCurrent[wicher.mapPosY][wicher.mapPosX]){
 		case 's':
-		blitSquareHUDtwice = 0;
-		wicher.state = STATE_HUD;
+		statePush(g_pGameStateManager, g_pHudState);
+		//blitSquareHUDtwice = 0;
+		//wicher.state = STATE_HUD;
 		break;
 	}
 }
@@ -236,7 +226,7 @@ void mapDrawTwice()
 	}
 }
 
-void stateGameCreate(void) {
+void gameGsCreate(void) {
   s_pView = viewCreate(0,
     TAG_VIEW_GLOBAL_PALETTE, 1,
     TAG_VIEW_COPLIST_MODE, COPPER_MODE_BLOCK,
@@ -282,11 +272,10 @@ void stateGameCreate(void) {
   viewLoad(s_pView);
 }
 
-void stateGameLoop(void) {
+void gameGsLoop(void) {
   //blitRect(s_pMainBuffer->pBack, 0, 0, 320, 128, 14);
   //drawMap();
   mapDrawTwice();
-  SquareHUDblitTwice();
   
   isTileWalkableCheckAndPass(direction);
 
@@ -347,7 +336,6 @@ void stateGameLoop(void) {
 	if (wicher.state == STATE_HUD){
 		if (keyUse(KEY_RETURN)){
 			wicher.state = STATE_IDLE;
-			redrawBackgroundOnHUDExit();
 		}
 	}
 
@@ -357,14 +345,14 @@ void stateGameLoop(void) {
 	vPortWaitForEnd(s_pVpMain);
 }
 
-void stateGameDestroy(void) {
+void gameGsDestroy(void) {
   systemUse();
   joyClose();
 	keyDestroy();
   // This will also destroy all associated viewports and viewport managers
   viewDestroy(s_pView);
 }
-
+/*
 tState g_sStateGame = {
     .cbCreate = stateGameCreate,
     .cbLoop = stateGameLoop,
@@ -372,3 +360,4 @@ tState g_sStateGame = {
     .cbSuspend = 0,
     .cbResume = gameOnResume,
     .pPrev = 0};
+	*/
