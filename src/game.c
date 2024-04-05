@@ -23,7 +23,7 @@ static tVPort *s_pVpMain; // Viewport for playfield
 static tSimpleBufferManager *s_pMainBuffer;
 
 static tBitMap *s_pTileset;
-static tBitMap *s_pHUD_square;
+
 static tFont *s_pFont;
 static tTextBitMap *s_pBmText;
 
@@ -249,7 +249,7 @@ void gameGsCreate(void) {
   s_pFont = fontCreate("data/topaz.fnt");
   s_pBmText = fontCreateTextBitMap(300, s_pFont->uwHeight);
 	s_pTileset = bitmapCreateFromFile("data/staryWicher.bm", 0);
-	s_pHUD_square = bitmapCreateFromFile("data/hud_square.bm", 0);
+
 
   wicher.state = STATE_IDLE;
   wicher.face = FACE_RIGHT;

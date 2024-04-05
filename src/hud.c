@@ -20,6 +20,8 @@ extern tStateManager *g_pGameStateManager;
 extern tState *g_pGameState;
 extern tState *g_pHudState;
 
+static tBitMap *s_pHUD_square;
+
 void hudGsCreate(void) {
   s_pViewHUD = viewCreate(0,
     TAG_VIEW_GLOBAL_PALETTE, 1,
@@ -28,7 +30,7 @@ void hudGsCreate(void) {
   // Now let's do the same for main playfield
   s_pVpHUD = vPortCreate(0,
     TAG_VPORT_VIEW, s_pViewHUD,
-    TAG_VPORT_BPP, 4,
+    TAG_VPORT_BPP, 5,
   TAG_END);
   s_pMainBuffer = simpleBufferCreate(0,
     TAG_SIMPLEBUFFER_VPORT, s_pVpHUD,
@@ -37,13 +39,13 @@ void hudGsCreate(void) {
 
 
 	paletteLoad("data/vk.plt", s_pVpHUD->pPalette, 32);
+  s_pHUD_square = bitmapCreateFromFile("data/hud_square_big.bm", 0);
 
+  blitCopy(s_pHUD_square, 
+            0, 0, 
+            s_pMainBuffer->pBack, 
+            0, 0, 320, 256, MINTERM_COOKIE);
 
-  blitRect(
-    s_pMainBuffer->pBack,
-    0, 0,
-    64, 64, 3
-  );
 //---------------------------------------------------------------- NEW STUFF END
 
   systemUnuse();
