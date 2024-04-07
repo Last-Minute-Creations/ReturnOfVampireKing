@@ -6,6 +6,7 @@
 #include <ace/managers/system.h> // For systemUnuse and systemUse
 #include <ace/managers/viewport/simplebuffer.h> // Simple buffer
 #include <ace/managers/blit.h>
+#include <ace/utils/font.h>
 
 // All variables outside fns are global - can be accessed in any fn
 // Static means here that given var is only for this file, hence 's_' prefix
@@ -20,7 +21,34 @@ extern tStateManager *g_pGameStateManager;
 extern tState *g_pGameState;
 extern tState *g_pHudState;
 
+static tFont *s_pFnt;
+static tTextBitMap *s_pBmTxt;
+
 static tBitMap *s_pHUD_square;
+
+UBYTE counter = 0;
+
+void waitFrames(tVPort *pVPort, UBYTE ubHowMany)
+{
+  for (UBYTE i = 0; i < ubHowMany; ++i)
+  {
+    viewProcessManagers(pVPort->pView);
+    copProcessBlocks();
+    vPortWaitForEnd(pVPort);
+  }
+}
+
+void printOnHUD(void){
+  fontFillTextBitMap(s_pFnt, s_pBmTxt, "TEST");
+  fontDrawTextBitMap(s_pMainBuffer->pBack, s_pBmTxt, 40, 40, 4, FONT_COOKIE);
+}
+
+void blitTxtMultiple(int amount){
+  if (counter < amount){
+    printOnHUD();
+    counter++;
+  }
+}
 
 void hudGsCreate(void) {
   s_pViewHUD = viewCreate(0,
@@ -41,6 +69,9 @@ void hudGsCreate(void) {
 	paletteLoad("data/vk.plt", s_pVpHUD->pPalette, 32);
   s_pHUD_square = bitmapCreateFromFile("data/hud_square_big.bm", 0);
 
+  s_pFnt = fontCreate("data/topaz.fnt");
+  s_pBmTxt = fontCreateTextBitMap(320, s_pFnt->uwHeight);
+
   blitCopy(s_pHUD_square, 
             0, 0, 
             s_pMainBuffer->pBack, 
@@ -55,16 +86,15 @@ void hudGsCreate(void) {
 }
 
 void hudGsLoop(void) {
+  blitTxtMultiple(4);
   // This will loop forever until you "pop" or change gamestate
   // or close the game
   if(keyUse(KEY_RETURN)) {
     statePop(g_pGameStateManager);
     return;
   }
-  else {
-    // Process loop normally
-    // We'll come back here later
-  }
+
+  waitFrames(s_pVpHUD, 1);
 }
 
 void hudGsDestroy(void) {

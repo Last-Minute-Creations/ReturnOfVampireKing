@@ -8,6 +8,8 @@ if(NOT AMIGA)
 	message(SEND_ERROR "This project only compiles for Amiga")
 endif()
 
+set(ACE_DEBUG ON)
+set(ACE_DEBUG_UAE ON)
 set(CMAKE_C_STANDARD 11)
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -DAMIGA -Wall -Wextra -fomit-frame-pointer")
 file(GLOB_RECURSE SOURCES src/*.c)
