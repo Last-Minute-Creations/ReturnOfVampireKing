@@ -129,8 +129,9 @@ void isInteractionOnAdjacentTile(){
 	switch(mapCurrent[wicher.mapPosY][wicher.mapPosX]){
 		case 's':
 		statePush(g_pGameStateManager, g_pHudState);
-		//blitSquareHUDtwice = 0;
-		//wicher.state = STATE_HUD;
+		break;
+		case 'r':
+		statePush(g_pGameStateManager, g_pHudState);
 		break;
 	}
 }
@@ -139,6 +140,7 @@ BOOL walkableTiles(int checkX, int checkY){
 	switch (mapCurrent[checkY][checkX]){
 		case 0:
 		case s:
+		case r:
 		return TRUE;
 	}
 	return FALSE;
@@ -191,12 +193,15 @@ void drawMap()
 	{
 		for (UBYTE j = 0; j < MAP_HEIGHT; ++j)
 		{
-			if (mapCurrent[j][i] == EMPTY_TILE || mapCurrent[j][i] == s) // TODO BETTER
+			if (mapCurrent[j][i] == EMPTY_TILE || mapCurrent[j][i] == s || mapCurrent[j][i] == r) // TODO BETTER
 			{
 				blitRect(s_pMainBuffer->pBack, i * TS, j * TS, TS, TS, 0);
 			}
 			if (mapCurrent[j][i] == S){ // SORDAN TILE
 				blitCopy(s_pTileset, 160, 32, s_pMainBuffer->pBack, i * TS, j * TS, TS, TS, MINTERM_COOKIE);
+			}
+			if (mapCurrent[j][i] == R){ // RASTPORT TILE
+				blitCopy(s_pTileset, 192, 32, s_pMainBuffer->pBack, i * TS, j * TS, TS, TS, MINTERM_COOKIE);
 			}
 			if (mapCurrent[j][i] == METEORITE)
 			{

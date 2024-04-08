@@ -29,6 +29,8 @@
 
 #define S 'S' // SORDAN TILE
 #define s 's' // SORDAN CHECK TILES
+#define R 'R' // RASTPORT TILE
+#define r 'r' // RASTPORT CHECK TILES
 
 
 
