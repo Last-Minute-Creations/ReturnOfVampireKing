@@ -1,5 +1,3 @@
-#include "hud.h"
-#include <ace/managers/key.h> // Keyboard processing
 #include <ace/managers/game.h> // For using gameExit
 #include <ace/utils/palette.h>
 #include <ace/managers/state.h>
@@ -7,6 +5,9 @@
 #include <ace/managers/viewport/simplebuffer.h> // Simple buffer
 #include <ace/managers/blit.h>
 #include <ace/utils/font.h>
+#include "defines.h"
+#include "hud.h"
+#include <ace/managers/key.h> 
 
 // All variables outside fns are global - can be accessed in any fn
 // Static means here that given var is only for this file, hence 's_' prefix
@@ -20,6 +21,10 @@ static tSimpleBufferManager *s_pMainBuffer;
 extern tStateManager *g_pGameStateManager;
 extern tState *g_pGameState;
 extern tState *g_pHudState;
+
+extern struct hud hud;
+
+UBYTE hudSelectWhat;
 
 static tFont *s_pFnt;
 static tTextBitMap *s_pBmTxt;
@@ -38,17 +43,18 @@ void waitFrames(tVPort *pVPort, UBYTE ubHowMany)
   }
 }
 
-void printOnHUD(void){
-  fontFillTextBitMap(s_pFnt, s_pBmTxt, "TEST");
+void printOnHUD(char * text){
+  fontFillTextBitMap(s_pFnt, s_pBmTxt, text);
   fontDrawTextBitMap(s_pMainBuffer->pBack, s_pBmTxt, 40, 40, 4, FONT_COOKIE);
 }
 
+/*
 void blitTxtMultiple(int amount){
   if (counter < amount){
     printOnHUD();
     counter++;
   }
-}
+}*/
 
 void hudGsCreate(void) {
   s_pViewHUD = viewCreate(0,
@@ -79,6 +85,15 @@ void hudGsCreate(void) {
 
 //---------------------------------------------------------------- NEW STUFF END
 
+  
+
+  if (hudSelectWhat == HUD_SORDAN){
+    printOnHUD("TEST SORDAN");
+  }
+  else if (hudSelectWhat == HUD_RASTPORT){
+    printOnHUD("TEST RASTPORT");
+  }
+
   systemUnuse();
 
   // Load the view
@@ -86,7 +101,7 @@ void hudGsCreate(void) {
 }
 
 void hudGsLoop(void) {
-  blitTxtMultiple(4);
+  //blitTxtMultiple(4);
   // This will loop forever until you "pop" or change gamestate
   // or close the game
   if(keyUse(KEY_RETURN)) {

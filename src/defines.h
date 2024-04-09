@@ -27,10 +27,15 @@
 
 #define TILE_EMPTY 0
 
+#define HUD_SORDAN 11
+#define HUD_RASTPORT 12
+
 #define S 'S' // SORDAN TILE
 #define s 's' // SORDAN CHECK TILES
 #define R 'R' // RASTPORT TILE
 #define r 'r' // RASTPORT CHECK TILES
+
+
 
 
 

@@ -32,6 +32,8 @@ UBYTE direction = DIR_NONE;
 int mapCurrent[MAP_HEIGHT][MAP_WIDTH];
 UBYTE mapPrep = 0;
 
+extern UBYTE hudSelectWhat;
+
 int blitSquareHUDtwice = 2;
 
 void gameOnResume(void)
@@ -128,9 +130,11 @@ void blitWicherAnim(UBYTE dir)
 void isInteractionOnAdjacentTile(){
 	switch(mapCurrent[wicher.mapPosY][wicher.mapPosX]){
 		case 's':
+		hudSelectWhat = HUD_SORDAN;
 		statePush(g_pGameStateManager, g_pHudState);
 		break;
 		case 'r':
+		hudSelectWhat = HUD_RASTPORT;
 		statePush(g_pGameStateManager, g_pHudState);
 		break;
 	}
