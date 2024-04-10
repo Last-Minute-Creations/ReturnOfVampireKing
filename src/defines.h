@@ -29,6 +29,7 @@
 
 #define HUD_SORDAN 11
 #define HUD_RASTPORT 12
+#define HUD_RANDOM_ENCOUNTER 13
 
 #define S 'S' // SORDAN TILE
 #define s 's' // SORDAN CHECK TILES

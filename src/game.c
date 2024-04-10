@@ -8,6 +8,7 @@
 #include <ace/utils/font.h>
 #include <ace/utils/palette.h>
 #include <ace/managers/blit.h> // Blitting fns
+#include <ace/managers/rand.h>
 
 #include "structures.h"
 #include "defines.h"
@@ -33,6 +34,8 @@ int mapCurrent[MAP_HEIGHT][MAP_WIDTH];
 UBYTE mapPrep = 0;
 
 extern UBYTE hudSelectWhat;
+tRandManager * random;
+UBYTE ubCheckRandomEncounter;
 
 int blitSquareHUDtwice = 2;
 
@@ -270,7 +273,8 @@ void gameGsCreate(void) {
 
   //loadMap(map2);
   loadMap(map_commodorlen);
- 
+  
+  randInit(random, 718, 30);
   
   systemUnuse();
 
@@ -282,6 +286,7 @@ void gameGsCreate(void) {
 }
 
 void gameGsLoop(void) {
+  ubCheckRandomEncounter = randUwMinMax(random, 0, 20);
   //blitRect(s_pMainBuffer->pBack, 0, 0, 320, 128, 14);
   //drawMap();
   mapDrawTwice();
@@ -301,6 +306,11 @@ void gameGsLoop(void) {
 		{
 			wicher.state = STATE_IDLE;
 			updateWicherPositionOnMapAfterAnim(direction);
+			
+			if (ubCheckRandomEncounter < 2){
+				hudSelectWhat = HUD_RANDOM_ENCOUNTER;
+				statePush(g_pGameStateManager, g_pHudState);
+			}
 			direction = DIR_NONE;
 			wicher.animCount = 0;
 		}

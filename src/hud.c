@@ -93,6 +93,10 @@ void hudGsCreate(void) {
   else if (hudSelectWhat == HUD_RASTPORT){
     printOnHUD("TEST RASTPORT");
   }
+  else if (hudSelectWhat == HUD_RANDOM_ENCOUNTER){
+    printOnHUD("TEST RANDOM ENCOUNTER");
+    
+  }
 
   systemUnuse();
 
