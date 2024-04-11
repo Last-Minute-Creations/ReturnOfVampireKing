@@ -1,13 +1,18 @@
-#include <ace/managers/game.h> // For using gameExit
+#include <ace/managers/viewport/simplebuffer.h>
+#include <ace/managers/joy.h>
+#include <ace/managers/key.h>
+#include <ace/managers/system.h>
+#include <ace/managers/game.h>
 #include <ace/utils/palette.h>
-#include <ace/managers/state.h>
-#include <ace/managers/system.h> // For systemUnuse and systemUse
-#include <ace/managers/viewport/simplebuffer.h> // Simple buffer
-#include <ace/managers/blit.h>
 #include <ace/utils/font.h>
+#include <stdio.h>
+#include <ace/managers/rand.h>
+#include <ace/managers/state.h>
+#include <ace/utils/custom.h>
+#include <ace/managers/ptplayer.h>
+#include <ace/utils/file.h>
 #include "defines.h"
-#include "hud.h"
-#include <ace/managers/key.h> 
+
 
 // All variables outside fns are global - can be accessed in any fn
 // Static means here that given var is only for this file, hence 's_' prefix
@@ -21,8 +26,6 @@ static tSimpleBufferManager *s_pMainBuffer;
 extern tStateManager *g_pGameStateManager;
 extern tState *g_pGameState;
 extern tState *g_pHudState;
-
-extern struct hud hud;
 
 UBYTE hudSelectWhat;
 
@@ -94,11 +97,10 @@ void hudGsCreate(void) {
     printOnHUD("TEST RASTPORT");
   }
   else if (hudSelectWhat == HUD_RANDOM_ENCOUNTER){
-    printOnHUD("TEST RANDOM ENCOUNTER");
-    
+    printOnHUD("TEST RANDOM ENCOUNTER");  
   }
-
-  systemUnuse();
+  //keyCreate();
+  //systemUnuse();
 
   // Load the view
   viewLoad(s_pViewHUD);
@@ -122,4 +124,5 @@ void hudGsDestroy(void) {
 
   // This will also destroy all associated viewports and viewport managers
   viewDestroy(s_pViewHUD);
+  systemUnuse();
 }

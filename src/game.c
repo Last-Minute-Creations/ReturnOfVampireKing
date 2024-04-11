@@ -1,14 +1,16 @@
-#include "game.h"
-#include <ace/managers/game.h>
+#include <ace/managers/viewport/simplebuffer.h>
 #include <ace/managers/joy.h>
 #include <ace/managers/key.h>
-#include <ace/managers/viewport/simplebuffer.h>
 #include <ace/managers/system.h>
-#include <ace/managers/state.h>
-#include <ace/utils/font.h>
+#include <ace/managers/game.h>
 #include <ace/utils/palette.h>
-#include <ace/managers/blit.h> // Blitting fns
+#include <ace/utils/font.h>
+#include <stdio.h>
 #include <ace/managers/rand.h>
+#include <ace/managers/state.h>
+#include <ace/utils/custom.h>
+#include <ace/managers/ptplayer.h>
+#include <ace/utils/file.h>
 
 #include "structures.h"
 #include "defines.h"
@@ -25,8 +27,8 @@ static tSimpleBufferManager *s_pMainBuffer;
 
 static tBitMap *s_pTileset;
 
-static tFont *s_pFont;
-static tTextBitMap *s_pBmText;
+//static tFont *s_pFont;
+//static tTextBitMap *s_pBmText;
 
 struct wicher wicher;
 UBYTE direction = DIR_NONE;
@@ -258,10 +260,12 @@ void gameGsCreate(void) {
 										  TAG_END);
 
 	paletteLoad("data/vk.plt", s_pVpMain->pPalette, 32);
-  s_pFont = fontCreate("data/topaz.fnt");
-  s_pBmText = fontCreateTextBitMap(300, s_pFont->uwHeight);
+  //s_pFont = fontCreate("data/topaz.fnt");
+  //s_pBmText = fontCreateTextBitMap(300, s_pFont->uwHeight);
 	s_pTileset = bitmapCreateFromFile("data/staryWicher.bm", 0);
 
+	 joyOpen();
+	//keyCreate();
 
   wicher.state = STATE_IDLE;
   wicher.face = FACE_RIGHT;
@@ -275,18 +279,15 @@ void gameGsCreate(void) {
   loadMap(map_commodorlen);
   
   randInit(random, 718, 30);
+
+  viewLoad(s_pView);
   
   systemUnuse();
+  //systemUnuse();  // WTF why flying works only with double Unuse?
 
-  joyOpen();
-	keyCreate();
-	systemUnuse();
-  // Load the view
-  viewLoad(s_pView);
 }
 
 void gameGsLoop(void) {
-  ubCheckRandomEncounter = randUwMinMax(random, 0, 20);
   //blitRect(s_pMainBuffer->pBack, 0, 0, 320, 128, 14);
   //drawMap();
   mapDrawTwice();
@@ -307,10 +308,11 @@ void gameGsLoop(void) {
 			wicher.state = STATE_IDLE;
 			updateWicherPositionOnMapAfterAnim(direction);
 			
-			if (ubCheckRandomEncounter < 2){
+			if (ubCheckRandomEncounter < 3){
 				hudSelectWhat = HUD_RANDOM_ENCOUNTER;
 				statePush(g_pGameStateManager, g_pHudState);
 			}
+			ubCheckRandomEncounter = randUwMinMax(random, 0, 10);
 			direction = DIR_NONE;
 			wicher.animCount = 0;
 		}
