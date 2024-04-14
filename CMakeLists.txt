@@ -62,7 +62,9 @@ convertBitmaps(
 	INTERLEAVED SOURCES
 		${RES_DIR}/staryWicher.png
     ${RES_DIR}/hud_square_big.png
+    ${RES_DIR}/rand_encounter_enemies.png
 	DESTINATIONS
 		${DATA_DIR}/staryWicher.bm 
     ${DATA_DIR}/hud_square_big.bm
+    ${DATA_DIR}/rand_encounter_enemies.bm
 )

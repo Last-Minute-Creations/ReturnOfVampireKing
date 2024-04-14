@@ -39,7 +39,13 @@ extern UBYTE hudSelectWhat;
 tRandManager * random;
 UBYTE ubCheckRandomEncounter;
 
+extern UBYTE fromMonsterSetSelected;
+
 int blitSquareHUDtwice = 2;
+
+// monster set - array of monsters to select randomly from, differs by difficulty level
+// 1 - easiest space invader (#defines maybe in future)
+int monsterSetEasy1[10] = {1,1,1,1,1,1,1,1,1,1};
 
 void gameOnResume(void)
 {
@@ -308,11 +314,13 @@ void gameGsLoop(void) {
 			wicher.state = STATE_IDLE;
 			updateWicherPositionOnMapAfterAnim(direction);
 			
-			if (ubCheckRandomEncounter < 3){
+			if (ubCheckRandomEncounter == 1){
 				hudSelectWhat = HUD_RANDOM_ENCOUNTER;
+				fromMonsterSetSelected = monsterSetEasy1[randUwMinMax(random, 0, 9)];				
 				statePush(g_pGameStateManager, g_pHudState);
 			}
-			ubCheckRandomEncounter = randUwMinMax(random, 0, 10);
+			// TODO if ground type == easy (to be decided by tiles, but no tile for floor for now)
+			ubCheckRandomEncounter = randUwMinMax(random, 1, ENCOUNTER_REGION_EASY);
 			direction = DIR_NONE;
 			wicher.animCount = 0;
 		}

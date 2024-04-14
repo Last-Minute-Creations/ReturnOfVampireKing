@@ -27,12 +27,15 @@ extern tStateManager *g_pGameStateManager;
 extern tState *g_pGameState;
 extern tState *g_pHudState;
 
+static tBitMap *s_pTilesEnemies;
+
 UBYTE hudSelectWhat;
 
 static tFont *s_pFnt;
 static tTextBitMap *s_pBmTxt;
 
 static tBitMap *s_pHUD_square;
+UBYTE fromMonsterSetSelected;
 
 UBYTE counter = 0;
 
@@ -60,6 +63,7 @@ void blitTxtMultiple(int amount){
 }*/
 
 void hudGsCreate(void) {
+  systemUse();
   s_pViewHUD = viewCreate(0,
     TAG_VIEW_GLOBAL_PALETTE, 1,
   TAG_END);
@@ -77,7 +81,7 @@ void hudGsCreate(void) {
 
 	paletteLoad("data/vk.plt", s_pVpHUD->pPalette, 32);
   s_pHUD_square = bitmapCreateFromFile("data/hud_square_big.bm", 0);
-
+  s_pTilesEnemies = bitmapCreateFromFile("data/rand_encounter_enemies.bm", 0);
   s_pFnt = fontCreate("data/topaz.fnt");
   s_pBmTxt = fontCreateTextBitMap(320, s_pFnt->uwHeight);
 
@@ -97,7 +101,11 @@ void hudGsCreate(void) {
     printOnHUD("TEST RASTPORT");
   }
   else if (hudSelectWhat == HUD_RANDOM_ENCOUNTER){
-    printOnHUD("TEST RANDOM ENCOUNTER");  
+    printOnHUD("TEST RANDOM ENCOUNTER"); 
+    if (fromMonsterSetSelected == 1){
+      blitCopy(s_pTilesEnemies, 0, 0, s_pMainBuffer->pBack, 80,80, TS, TS, MINTERM_COOKIE);
+
+    } 
   }
   //keyCreate();
   //systemUnuse();

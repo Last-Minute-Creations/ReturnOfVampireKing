@@ -36,7 +36,7 @@
 #define R 'R' // RASTPORT TILE
 #define r 'r' // RASTPORT CHECK TILES
 
-
+#define ENCOUNTER_REGION_EASY 24  // rand 0-24 chance to encounter
 
 
 
