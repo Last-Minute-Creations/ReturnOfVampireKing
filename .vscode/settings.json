@@ -6,6 +6,7 @@
         "game.h": "c",
         "key.h": "c",
         "palette.h": "c",
-        "hud.h": "c"
+        "hud.h": "c",
+        "file.h": "c"
     }
 }

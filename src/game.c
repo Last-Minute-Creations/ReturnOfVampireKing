@@ -31,6 +31,10 @@ static tBitMap *s_pTileset;
 //static tTextBitMap *s_pBmText;
 
 struct wicher wicher;
+struct collected col;
+struct sordan_prices sordan_prices;
+struct rastport_prices rastport_prices;
+struct stats stats;
 UBYTE direction = DIR_NONE;
 int mapCurrent[MAP_HEIGHT][MAP_WIDTH];
 UBYTE mapPrep = 0;
@@ -43,9 +47,24 @@ extern UBYTE fromMonsterSetSelected;
 
 int blitSquareHUDtwice = 2;
 
+int spearStatsPerLevel[SPEAR_LEVELS][4] = { // 4: modifier, price: coal, caps, resis
+	{0,  0,0,0},
+	{2,  0,0,0},
+	{5,  6,5,4},
+	{10, 8,6,2}};
+
 // monster set - array of monsters to select randomly from, differs by difficulty level
 // 1 - easiest space invader (#defines maybe in future)
 int monsterSetEasy1[10] = {1,1,1,1,1,1,1,1,1,1};
+
+void setInitialStats(){
+	stats.spear_level = 1;
+	stats.shield_level = 1;
+	stats.att = 2;
+	stats.def = 2;
+	stats.hp = 10;
+	stats.batteryCapacity = 50;
+}
 
 void gameOnResume(void)
 {
@@ -273,10 +292,25 @@ void gameGsCreate(void) {
 	 joyOpen();
 	//keyCreate();
 
+	setInitialStats();
+
   wicher.state = STATE_IDLE;
   wicher.face = FACE_RIGHT;
   wicher.animTick = 0;
   wicher.animCount = 0;
+
+  col.energy = 10;
+  col.coal = 50;
+  col.capacitors = 2;
+  col.resistors = 1;
+
+  sordan_prices.capacitor = 10;
+  sordan_prices.resistor = 5;
+  sordan_prices.scrap = 1;
+
+  rastport_prices.capacitor = 8;
+  rastport_prices.resistor = 4;
+  rastport_prices.coal = 3;
   //s_pVpMain->pPalette[2] = 0x0800; // Red - not max, a bit dark
   //blitRect(s_pMainBuffer->pBack, 0, 0, 320, 128, 14);
 	//blitRect(s_pMainBuffer->pBack, 0, 128, 320, 128, 8);
